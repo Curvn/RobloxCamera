@@ -1,8 +1,3 @@
--- Gui to Lua
--- Version: 3.2
-
--- Instances:
-
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local UIListLayout = Instance.new("UIListLayout")
@@ -11,7 +6,6 @@ local Username = Instance.new("TextLabel")
 local Message = Instance.new("TextLabel")
 local UserImage = Instance.new("ImageLabel")
 
---Properties:
 ScreenGui.Name = "RobloxCameraChatLog"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.DisplayOrder = 1
