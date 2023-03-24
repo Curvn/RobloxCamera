@@ -1,4 +1,3 @@
-# RobloxCamera
-main core aspects of RobloxCamera
+# RobloxCamera is now PUBLIC
 
-# RobloxCamera is not PUBLIC
+Developed by [@p-on](https://github.com/p-on) and [@Curvn](https://github.com/Curvn)
