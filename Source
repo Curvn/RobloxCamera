@@ -1,0 +1,185 @@
+if not game.Loaded then game.Loaded:Wait() end
+
+local Players, UserInputService, TweenService, CoreGui = game:GetService("Players"), game:GetService("UserInputService"), game:GetService("TweenService"), game:GetService("CoreGui")
+local UpdateCamera, NewCurrentFocus, MessedWithHats, OverviewCFrame, CurrentFocus = nil, nil, {}, CFrame.new(5526.91846, 93.3602142, -17066.2559), nil
+
+local LoadingFrame2 = Instance.new("Frame", CoreGui.RobloxGui)
+LoadingFrame2.Name = "LoadingFrame2"
+LoadingFrame2.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+LoadingFrame2.BackgroundTransparency = 0
+LoadingFrame2.Position = UDim2.new(0, 0, -0.1, 0)
+LoadingFrame2.Size = UDim2.new(1, 0, 1.20000005, 0)
+
+wait(3.5)
+game:GetService("StarterGui"):SetCoreGuiEnabled("All", false)
+Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3000, 3000, 3000)
+wait(1)
+Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+UserInputService.MouseIconEnabled = false
+workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+CoreGui.RobloxGui.ResetOnSpawn = false
+workspace.CurrentCamera.CFrame = OverviewCFrame
+local SayRemote = game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest
+if Players.LocalPlayer.Character:FindFirstChild("Right Arm") then Players.LocalPlayer.Character["Right Arm"]:Destroy() end
+if Players.LocalPlayer.Character:FindFirstChild("RightUpperArm") then Players.LocalPlayer.Character.RightUpperArm:Destroy() end
+
+Players.LocalPlayer.Idled:Connect(function()
+	game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	wait()
+	game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+
+for i,v in pairs(workspace:GetDescendants()) do
+	if v:IsA("Tool") or v.Name == "Shirt Graphic" then
+		v:Destroy()
+	end
+end
+workspace.DescendantAdded:Connect(function(v)
+	if v:IsA("Tool") or v.Name == "Shirt Graphic" then
+		wait()
+		v:Destroy()
+	end
+end)
+
+spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Curvn/RobloxCamera/main/Resources/Game.lua"))() end)
+spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Curvn/RobloxCamera/main/Resources/TimePlayer.lua"))() end)
+spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Curvn/RobloxCamera/main/Resources/TimeServer.lua"))() end)
+spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Curvn/RobloxCamera/main/Resources/Spectate.lua"))() end)
+spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Curvn/RobloxCamera/main/Resources/Chat.lua"))() end)
+wait(1)
+CoreGui.RobloxGui:WaitForChild("Spectate"); CoreGui.RobloxGui:WaitForChild("TimePlayer"); CoreGui.RobloxGui:WaitForChild("TimeServer")
+local Guis = {Spectate = CoreGui.RobloxGui.Spectate.ScrollComplex.header, TimePlayer = CoreGui.RobloxGui.TimePlayer.ScrollComplex.header, TimeServer = CoreGui.RobloxGui.TimeServer.ScrollComplex.header}
+wait(1)
+CoreGui.RobloxGui.TimeServer:TweenPosition(UDim2.new(0.92, 0, 0.91, 0), "In", "Quint", 1)
+CoreGui.RobloxGui.Game:TweenPosition(UDim2.new(0.92, 0, 0.063, 0), "In", "Quint", 1)
+LoadingFrame2:TweenPosition(UDim2.new(0, 0, -1.5, 0), "In", "Quint", 2.5)
+wait(2.5)
+
+function FindNewServer()
+    CoreGui.RobloxGui.TimeServer:TweenPosition(UDim2.new(0.92, 0, 1.2, 0), "Out", "Quint", 1)
+    CoreGui.RobloxGui.Game:TweenPosition(UDim2.new(0.92, 0, -0.2, 0), "Out", "Quint", 1)
+    CoreGui.RobloxGui.TimePlayer:TweenPosition(UDim2.new(0.81, 0, 1.2, 0), "Out", "Quint", 1)
+    CoreGui.RobloxGui.Spectate:TweenPosition(UDim2.new(0.5, 0, 1.2, 0), "Out", "Quint", 1)
+    wait(1)
+    CoreGui.RobloxGui.TimeServer:Destroy(); CoreGui.RobloxGui.Game:Destroy(); CoreGui.RobloxGui.TimePlayer:Destroy(); CoreGui.RobloxGui.Spectate:Destroy()
+    LoadingFrame2:TweenPosition(UDim2.new(0, 0, -0.1, 0), "In", "Quint", 2.5)
+    wait(2.5)
+    local paste = "https://pastebin.com/raw/NgHcM6Rv"
+    game:GetService("TeleportService"):SetTeleportGui(LoadingFrame2)
+    syn.queue_on_teleport('loadstring(game:HttpGet("'..paste..'"))()')
+    for i = 1,100 do
+        local GUIDs = {}
+        local Http = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100&cursor="))
+        for i = 1,100 do
+        	for i,v in pairs(Http.data) do
+        		if v.playing ~= v.maxPlayers then
+        			table.insert(GUIDs, {id = v.id, users = v.playing})
+        		end
+        	end
+        	if Http.nextPageCursor ~= null then Http = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100&cursor="..Http.nextPageCursor)) else break end
+        end
+        pcall(function() game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, GUIDs[math.random(1, #GUIDs)].id, Players.LocalPlayer) end)
+        wait(3)
+    end
+end
+
+local AlreadyWorkedWith = {}
+function FindNewPlayer()
+    local TempPlayers = {}
+    for i,v in pairs(Players:GetPlayers()) do
+        if v ~= Players.LocalPlayer and not table.find(AlreadyWorkedWith, v) then
+            table.insert(TempPlayers, v)
+        end
+    end
+    if #TempPlayers == 0 then
+        AlreadyWorkedWith = {}
+        for i,v in pairs(Players:GetPlayers()) do
+            if v ~= Players.LocalPlayer then
+                table.insert(TempPlayers, v)
+            end
+        end
+    end
+    local Chosen = TempPlayers[math.random(1, #TempPlayers)]
+    table.insert(AlreadyWorkedWith, Chosen)
+    return Chosen
+end
+
+spawn(function()
+    for i = 0, 5 do
+        Guis.TimeServer.Text = tostring(5 - i)
+        wait(60)
+    end
+    FindNewServer()
+end)
+
+wait(3)
+if game.PlaceId == 417267366 then -- dollhouse
+    Players.LocalPlayer.PlayerGui.ScreenGui:Destroy()
+end
+
+if game.PlaceId == 6218169544 then -- korblox and headless hangout
+    Players.LocalPlayer.PlayerGui.HDAdminGUIs:Destroy()
+    Players.LocalPlayer.PlayerGui.Main:Destroy()
+end
+
+repeat wait()
+    local success, failure = pcall(function()
+        if UpdateCamera then UpdateCamera:Disconnect(); UpdateCamera = nil end
+        for i,v in pairs(workspace.CurrentCamera:GetChildren()) do
+            if v:IsA("BlurEffect") then v:Destroy() end
+        end
+        for i,v in pairs(MessedWithHats) do
+            v.Transparency = 0
+        end
+        MessedWithHats = {}
+        if #Players:GetPlayers() > 5 then
+            CurrentFocus = {Player = FindNewPlayer()}
+            Guis.Spectate.Text = CurrentFocus.Player.Name
+            TweenService:Create(workspace.CurrentCamera, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0), {CFrame = OverviewCFrame}):Play()
+            local Blur = Instance.new("BlurEffect", workspace.CurrentCamera)
+            for i = 0, 40 do Blur.Size = Blur.Size + 1 wait() end
+            TweenService:Create(workspace.CurrentCamera, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0), {CFrame = CurrentFocus.Player.Character.Head.CFrame}):Play()
+            wait(2)
+            spawn(function()
+                for i = 1, 10 do
+                    pcall(function()
+                        wait(6)
+                        SayRemote:FireServer("twitch.tv/robloxcamera. LIVE RN!, WATCHING THIS GAME!! Say hi!", "All")
+                    end)
+                end
+            end)
+            UpdateCamera = game:GetService("RunService").RenderStepped:Connect(function()
+                pcall(function()
+                    for i,v in pairs(CurrentFocus.Player.Character:GetChildren()) do
+                        if (v:IsA("Accessory") or v:IsA("Hat")) and v:FindFirstChild("Handle") then
+                            if v.Handle.Transparency == 1 then continue end
+                            table.insert(MessedWithHats, v.Handle)
+                            v.Handle.Transparency = 1
+                        end
+                    end
+                    workspace.CurrentCamera.CFrame = CurrentFocus.Player.Character.Head.CFrame 
+                end)
+                for i,v in pairs(Players:GetPlayers()) do
+                    pcall(function()
+                        local Humanoid = v.Character:FindFirstChild("Humanoid")
+                        Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
+                        Humanoid.NameDisplayDistance = 9e9
+                    end)
+                end
+            end)
+            for i = 0, 40 do Blur.Size = Blur.Size - 1 wait() end
+            Blur:Destroy()
+            CoreGui.RobloxGui.Spectate:TweenPosition(UDim2.new(0.5, 0, 0.96, 0), "In", "Quint", 1)
+            CoreGui.RobloxGui.TimePlayer:TweenPosition(UDim2.new(0.81, 0, 0.91, 0), "In", "Quint", 1)
+            for i = 0, 59 do
+                Guis.TimePlayer.Text = tostring(60 - i)
+                wait(1)
+            end
+            CoreGui.RobloxGui.TimePlayer:TweenPosition(UDim2.new(0.81, 0, 1.2, 0), "Out", "Quint", 1)
+            CoreGui.RobloxGui.Spectate:TweenPosition(UDim2.new(0.5, 0, 1.2, 0), "Out", "Quint", 1)
+            Guis.Spectate.Text = ""
+        else
+            FindNewServer()
+        end
+    end)
+until nil
